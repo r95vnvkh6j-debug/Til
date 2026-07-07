@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       await ffmpeg.writeFile("input.mp4", await file.arrayBuffer());
-
       statusText.innerText = "Bearbetar...";
+      
       await ffmpeg.exec([
         "-i", "input.mp4",
         "-c:v", "libx264", "-profile:v", "high", "-level", "4.2",
@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ]);
 
       const remuxedBytes = await ffmpeg.readFile("output.mp4");
-      // Patcha containern med din funktion
       const outputBytes = window.KryptonMp4Patcher.patchKryptonContainer(remuxedBytes);
       
       const blob = new Blob([outputBytes], { type: "video/mp4" });
@@ -59,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     } catch (err) {
       statusText.innerText = "Fel: " + err.message;
-      console.error(err);
     }
   });
 });
