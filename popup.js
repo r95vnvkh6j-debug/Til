@@ -1,4 +1,4 @@
-// Initiera FFmpeg från den lokala filen
+// Initiera FFmpeg - utan manuella sökvägar för att undvika 404
 const { FFmpeg } = FFmpegWASM;
 const ffmpeg = new FFmpeg();
 
@@ -13,31 +13,28 @@ const downloadBtn = document.getElementById('download-btn');
 // Klicka på knappen för att trigga filväljaren
 browseBtn.addEventListener('click', () => fileInput.click());
 
-// Huvudlogik för filhantering
+// Huvudlogik
 fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  // Uppdatera UI: Visa laddningsläge
   processingState.classList.remove('hidden');
   successState.classList.add('hidden');
   statusText.innerText = "Laddar motor...";
 
   try {
-    // Ladda FFmpeg lokalt
     if (!ffmpeg.loaded) {
-      await ffmpeg.load({
-        coreURL: "/ffmpeg/ffmpeg-core.js",
-        wasmURL: "/ffmpeg/ffmpeg-core.wasm"
-      });
+      // Genom att lämna load() tom hämtar biblioteket 
+      // alla filer (inklusive 814.ffmpeg.js) från ett officiellt CDN.
+      await ffmpeg.load();
     }
 
     statusText.innerText = "Bearbetar...";
     
-    // Skriv filen till FFmpeg:s virtuella filsystem
+    // Skriv filen
     await ffmpeg.writeFile('input.mp4', await file.arrayBuffer());
 
-    // Kör FFmpeg-kommandot
+    // Kör FFmpeg - kopierar strömmarna utan att koda om (bevarar kvalitet)
     await ffmpeg.exec([
       '-i', 'input.mp4', 
       '-c', 'copy', 
@@ -47,13 +44,12 @@ fileInput.addEventListener('change', async (e) => {
     // Läs resultatet
     const data = await ffmpeg.readFile('output.mp4');
     
-    // Kör din patcher-funktion
+    // Applicera din Krypton-patch för att förhindra komprimering
     const patched = window.KryptonMp4Patcher.patchKryptonContainer(data);
     
-    // Skapa en nedladdningsbar länk
+    // Skapa nedladdningslänk
     const url = URL.createObjectURL(new Blob([patched], { type: 'video/mp4' }));
 
-    // Uppdatera UI: Visa success
     processingState.classList.add('hidden');
     successState.classList.remove('hidden');
 
