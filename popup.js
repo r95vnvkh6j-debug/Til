@@ -1,21 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const dropZone = document.getElementById("drop-zone");
   const browseBtn = document.getElementById("browse-btn");
   const fileInput = document.getElementById("file-input");
   const statusText = document.getElementById("status-text");
 
-  // Kontrollera att FFmpeg är definierat
-  if (!window.FFmpegWASM) {
-    statusText.innerText = "Error: FFmpeg library not loaded.";
-    return;
-  }
-
-  const { FFmpeg } = window.FFmpegWASM;
-  const ffmpeg = new FFmpeg();
-
-  ffmpeg.on("progress", ({ progress }) => {
-    statusText.innerText = `Processing: ${Math.round(progress * 100)}%`;
-  });
+  // Här laddar vi FFmpeg lokalt från public/ffmpeg
+  const ffmpeg = new FFmpegWASM.FFmpeg();
 
   async function handleFile(file) {
     statusText.innerText = "Loading engine...";
@@ -23,16 +12,16 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       if (!ffmpeg.loaded) {
         await ffmpeg.load({
-          coreURL: "ffmpeg/ffmpeg-core.js",
-          wasmURL: "ffmpeg/ffmpeg-core.wasm",
+          coreURL: "/ffmpeg/ffmpeg-core.js",
+          wasmURL: "/ffmpeg/ffmpeg-core.wasm",
         });
       }
 
-      statusText.innerText = "Reading file...";
+      statusText.innerText = "Processing...";
       const inputBytes = new Uint8Array(await file.arrayBuffer());
       await ffmpeg.writeFile("input.mp4", inputBytes);
 
-      statusText.innerText = "Processing...";
+      // Kör exporten
       await ffmpeg.exec([
         "-i", "input.mp4",
         "-c:v", "libx264",
