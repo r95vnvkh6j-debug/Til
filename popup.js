@@ -1,51 +1,69 @@
-const { createFFmpeg, fetchFile } = FFmpeg;
-const ffmpeg = createFFmpeg({ log: true });
+document.addEventListener("DOMContentLoaded", () => {
+  const dropZone = document.getElementById("drop-zone");
+  const browseBtn = document.getElementById("browse-btn");
+  const fileInput = document.getElementById("file-input");
+  const processingState = document.getElementById("processing-state");
+  const statusText = document.getElementById("status-text");
+  const progressBar = document.getElementById("progress-bar");
+  const successState = document.getElementById("success-state");
 
-const fileInput = document.getElementById('file-input');
-const browseBtn = document.getElementById('browse-btn');
-const statusText = document.getElementById('status-text');
+  const { FFmpeg } = window.FFmpegWASM || {};
+  const ffmpeg = FFmpeg ? new FFmpeg() : null;
 
-browseBtn.addEventListener('click', () => fileInput.click());
+  ffmpeg?.on("progress", ({ progress }) => {
+    progressBar.style.width = `${Math.round(progress * 100)}%`;
+  });
 
-// Uppdatera status baserat på FFmpegs framsteg
-ffmpeg.setProgress(({ ratio }) => {
-  statusText.innerText = `Processing: ${Math.round(ratio * 100)}%`;
-});
+  async function handleFile(file) {
+    processingState.classList.remove("hidden");
+    statusText.innerText = "Initializing...";
 
-fileInput.addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+    try {
+      if (!ffmpeg.loaded) {
+        await ffmpeg.load({
+          coreURL: "ffmpeg/ffmpeg-core.js",
+          wasmURL: "ffmpeg/ffmpeg-core.wasm",
+        });
+      }
 
-  try {
-    statusText.innerText = "Loading engine...";
-    if (!ffmpeg.isLoaded()) await ffmpeg.load();
+      const inputBytes = new Uint8Array(await file.arrayBuffer());
+      await ffmpeg.writeFile("input.mp4", inputBytes);
 
-    statusText.innerText = "Encoding (don't close)...";
-    ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
-    
-    // Vi använder "ultrafast" preset för att inte krascha mobilens minne
-    await ffmpeg.run(
-      '-i', 'input.mp4',
-      '-c:v', 'libx264',
-      '-crf', '23',           // Standardkvalitet (CRF 18 var för tungt för RAM)
-      '-preset', 'ultrafast', // Tvingar den att köra snabbt
-      '-profile:v', 'main',
-      '-pix_fmt', 'yuv420p',
-      '-c:a', 'aac',
-      'output.mp4'
-    );
+      // VIKTIGT: Inga metadata-flaggor här som triggar TikTok
+      // Vi kör en ren omkodning till H.264 High Profile
+      await ffmpeg.exec([
+        "-i", "input.mp4",
+        "-c:v", "libx264",
+        "-profile:v", "high",
+        "-level", "4.2",
+        "-pix_fmt", "yuv420p",
+        "-c:a", "aac",
+        "-movflags", "+faststart",
+        "output.mp4"
+      ]);
 
-    const data = ffmpeg.FS('readFile', 'output.mp4');
-    const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'tiktok_fixed.mp4';
-    a.click();
-    
-    statusText.innerText = "Done!";
-  } catch (err) {
-    statusText.innerText = "Failed: " + err.message;
-    console.error(err);
+      const remuxedBytes = await ffmpeg.readFile("output.mp4");
+      
+      // Använd din patcher för att fixa containern efteråt
+      const outputBytes = window.KryptonMp4Patcher.patchKryptonContainer(remuxedBytes);
+      
+      const blob = new Blob([outputBytes], { type: "video/mp4" });
+      const url = URL.createObjectURL(blob);
+
+      processingState.classList.add("hidden");
+      successState.classList.remove("hidden");
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `krypton_${file.name}`;
+      a.click();
+
+    } catch (error) {
+      console.error(error);
+      statusText.innerText = "Error occurred.";
+    }
   }
+
+  browseBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (e) => e.target.files[0] && handleFile(e.target.files[0]));
 });
