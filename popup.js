@@ -12,27 +12,35 @@ fileInput.addEventListener('change', async (e) => {
   if (!file) return;
 
   try {
-    statusText.innerText = "Initializing engine...";
+    statusText.innerText = "Initializing...";
     if (!ffmpeg.isLoaded()) await ffmpeg.load();
 
-    statusText.innerText = "Processing video...";
+    statusText.innerText = "Processing for TikTok...";
     ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
     
-    // Utför bearbetningen lokalt
-    await ffmpeg.run('-i', 'input.mp4', '-c', 'copy', 'output.mp4');
+    // VIKTIGT: Vi kodar om med inställningar som TikTok inte rör
+    await ffmpeg.run(
+      '-i', 'input.mp4',
+      '-c:v', 'libx264',      // Använd x264
+      '-crf', '18',           // Hög kvalitet (lägre siffra = bättre)
+      '-profile:v', 'high',   // TikToks favorit-profil
+      '-level', '4.2',
+      '-pix_fmt', 'yuv420p',  // Viktigt för kompatibilitet
+      '-c:a', 'aac',          // Standard ljud
+      'output.mp4'
+    );
 
     const data = ffmpeg.FS('readFile', 'output.mp4');
     const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
     
-    // Skapa nedladdning
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'fixed-video.mp4';
+    a.download = 'tiktok_ready.mp4';
     a.click();
     
-    statusText.innerText = "Success!";
+    statusText.innerText = "Done! Upload this version.";
   } catch (err) {
     statusText.innerText = "Error: " + err.message;
-    console.error("Feldetaljer:", err);
+    console.error(err);
   }
 });
