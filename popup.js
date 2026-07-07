@@ -1,3 +1,4 @@
+// Initiera FFmpeg
 const { FFmpeg } = FFmpegWASM;
 const ffmpeg = new FFmpeg();
 
@@ -20,20 +21,31 @@ fileInput.addEventListener('change', async (e) => {
 
   try {
     if (!ffmpeg.loaded) {
-      // Peka på dina egna filer i mappen /ffmpeg/
+      // VIKTIGT: Vi anger specifika lokala sökvägar för alla delar
+      // Detta tvingar biblioteket att hålla sig inom din domän
       await ffmpeg.load({
         coreURL: "/ffmpeg/ffmpeg-core.js",
-        wasmURL: "/ffmpeg/ffmpeg-core.wasm"
+        wasmURL: "/ffmpeg/ffmpeg-core.wasm",
+        workerURL: "/ffmpeg/ffmpeg.js" 
       });
     }
 
     statusText.innerText = "Bearbetar...";
+    
     await ffmpeg.writeFile('input.mp4', await file.arrayBuffer());
 
-    await ffmpeg.exec(['-i', 'input.mp4', '-c', 'copy', 'output.mp4']);
+    // Kör FFmpeg - kopierar strömmarna utan att koda om
+    await ffmpeg.exec([
+      '-i', 'input.mp4', 
+      '-c', 'copy', 
+      'output.mp4'
+    ]);
 
     const data = await ffmpeg.readFile('output.mp4');
+    
+    // Applicera din patcher-funktion
     const patched = window.KryptonMp4Patcher.patchKryptonContainer(data);
+    
     const url = URL.createObjectURL(new Blob([patched], { type: 'video/mp4' }));
 
     processingState.classList.add('hidden');
@@ -45,8 +57,11 @@ fileInput.addEventListener('change', async (e) => {
       a.download = 'krypton_fixed.mp4';
       a.click();
     };
+
   } catch (err) {
     console.error("FFmpeg Error:", err);
+    // Om det fortfarande kastar SecurityError, så betyder det att 
+    // webbläsaren blockerar worker-skriptet.
     statusText.innerText = "Error: " + err.message;
   }
 });
