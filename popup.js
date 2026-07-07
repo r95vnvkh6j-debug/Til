@@ -1,7 +1,8 @@
+const { createFFmpeg, fetchFile } = FFmpeg;
+const ffmpeg = createFFmpeg({ log: true });
+
 const fileInput = document.getElementById('file-input');
 const browseBtn = document.getElementById('browse-btn');
-const uploadContent = document.getElementById('upload-content');
-const processingState = document.getElementById('processing-state');
 const statusText = document.getElementById('status-text');
 
 browseBtn.addEventListener('click', () => fileInput.click());
@@ -10,29 +11,28 @@ fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  uploadContent.classList.add('hidden');
-  processingState.classList.remove('hidden');
-
-  const formData = new FormData();
-  formData.append('video', file);
-
   try {
-    const response = await fetch('/api/process', {
-      method: 'POST',
-      body: formData
-    });
+    statusText.innerText = "Initializing engine...";
+    if (!ffmpeg.isLoaded()) await ffmpeg.load();
 
-    if (!response.ok) throw new Error('Server error');
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
+    statusText.innerText = "Processing video...";
+    ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
     
-    // Visa success-state här...
-    alert("Video färdigbehandlad!");
-    window.location.href = url; // Ladda ner direkt
+    // Utför bearbetningen lokalt
+    await ffmpeg.run('-i', 'input.mp4', '-c', 'copy', 'output.mp4');
+
+    const data = ffmpeg.FS('readFile', 'output.mp4');
+    const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+    
+    // Skapa nedladdning
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'fixed-video.mp4';
+    a.click();
+    
+    statusText.innerText = "Success!";
   } catch (err) {
-    alert("FEL: " + err.message);
-    uploadContent.classList.remove('hidden');
-    processingState.classList.add('hidden');
+    statusText.innerText = "Error: " + err.message;
+    console.error("Feldetaljer:", err);
   }
 });
