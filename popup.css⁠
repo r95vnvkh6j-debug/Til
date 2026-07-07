@@ -1,76 +1,68 @@
-const { createFFmpeg, fetchFile } = FFmpeg;
-
-// Initiera FFmpeg
-const ffmpeg = createFFmpeg({
-  corePath: '/ffmpeg/ffmpeg-core.js',
-  log: true,
-});
-
-const fileInput = document.getElementById('file-input');
-const browseBtn = document.getElementById('browse-btn');
-const uploadContent = document.getElementById('upload-content');
-const processingState = document.getElementById('processing-state');
-const successState = document.getElementById('success-state');
-const statusText = document.getElementById('status-text');
-const progressBar = document.getElementById('progress-bar');
-const downloadBtn = document.getElementById('download-btn');
-
-// Starta motorn direkt när sidan laddas
-async function initFFmpeg() {
-  try {
-    if (!ffmpeg.isLoaded()) {
-      statusText.innerText = "Initializing engine...";
-      await ffmpeg.load();
-      console.log("FFmpeg ready");
-    }
-  } catch (err) {
-    console.error(err);
-    statusText.innerText = "Error loading engine";
-    alert("Kunde inte ladda FFmpeg: " + err.message);
-  }
+/* Grundläggande styling för att centrera allt */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f4f4f9;
 }
-initFFmpeg();
 
-// Hantera klick på "Browse"
-browseBtn.addEventListener('click', () => fileInput.click());
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 350px;
+}
 
-// Hantera filval
-fileInput.addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+h1 {
+  color: #333;
+  margin-bottom: 1.5rem;
+}
 
-  // Visa processing-läge
-  uploadContent.classList.add('hidden');
-  processingState.classList.remove('hidden');
-  statusText.innerText = "Processing video...";
+/* Denna klass gör att element försvinner helt */
+.hidden {
+  display: none !important;
+}
 
-  try {
-    // Skriv fil till minnet
-    ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
+/* Styling för knappar */
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
 
-    // Kör FFmpeg-kommando (exempel: kopiera utan omkodning för att behålla kvalitet)
-    await ffmpeg.run('-i', 'input.mp4', '-c', 'copy', 'output.mp4');
+button:hover {
+  background-color: #0056b3;
+}
 
-    // Hämta resultatet
-    const data = ffmpeg.FS('readFile', 'output.mp4');
-    
-    // Skapa nedladdningslänk
-    const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
-    downloadBtn.onclick = () => {
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'patched-video.mp4';
-      a.click();
-    };
+/* Styling för laddningsfältet */
+#progress-container {
+  width: 100%;
+  height: 15px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  margin: 15px 0;
+  overflow: hidden;
+}
 
-    // Visa success-läge
-    processingState.classList.add('hidden');
-    successState.classList.remove('hidden');
-    progressBar.style.width = '100%';
+#progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #28a745;
+  transition: width 0.1s linear;
+}
 
-  } catch (err) {
-    console.error(err);
-    statusText.innerText = "Error processing video";
-    alert("Något gick fel: " + err.message);
-  }
-});
+#status-text {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
