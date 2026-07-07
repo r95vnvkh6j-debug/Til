@@ -1,13 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   const browseBtn = document.getElementById("browse-btn");
   const fileInput = document.getElementById("file-input");
+  const processingState = document.getElementById("processing-state");
   const statusText = document.getElementById("status-text");
   const progressBar = document.getElementById("progress-bar");
-  const processingState = document.getElementById("processing-state");
   const successState = document.getElementById("success-state");
   const downloadBtn = document.getElementById("download-btn");
 
-  // Initialisera FFmpeg
   const { FFmpeg } = FFmpegWASM;
   const ffmpeg = new FFmpeg();
 
@@ -26,14 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       if (!ffmpeg.loaded) {
-        // Laddar filerna från /ffmpeg/ mappen i roten
         await ffmpeg.load({
           coreURL: "/ffmpeg/ffmpeg-core.js",
           wasmURL: "/ffmpeg/ffmpeg-core.wasm",
         });
       }
 
-      statusText.innerText = "Bearbetar...";
+      statusText.innerText = "Bearbetar video...";
       await ffmpeg.writeFile("input.mp4", await file.arrayBuffer());
 
       await ffmpeg.exec([
