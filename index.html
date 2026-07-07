@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Krypton</title>
-    
     <style>
         .hidden { display: none !important; }
         body { font-family: sans-serif; text-align: center; padding: 50px; }
     </style>
 </head>
 <body>
-
     <h1>KRYPTON</h1>
     
     <div id="cursor-glow"></div>
-    
     <input type="file" id="file-input" style="display: none;">
     <button id="browse-btn">Välj videofil</button>
     
@@ -28,11 +25,10 @@
         <button id="download-btn">Ladda ner</button>
     </div>
 
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd/ffmpeg.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
     
     <script src="mp4-container-patcher.js"></script>
     <script src="interactions.js"></script>
     <script src="popup.js"></script>
-
 </body>
 </html>
