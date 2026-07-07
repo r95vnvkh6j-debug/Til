@@ -2,44 +2,15 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Krypton</title>
-    
     <style>
-        .hidden { 
-            display: none !important; 
-        }
-        body { 
-            font-family: sans-serif; 
-            text-align: center; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 80vh; 
-        }
-        #cursor-glow {
-            position: fixed;
-            pointer-events: none;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(0, 150, 255, 0.15) 0%, transparent 70%);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        #cursor-glow.visible { opacity: 1; }
+        .hidden { display: none !important; }
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
     </style>
-
-    <script src="/ffmpeg/ffmpeg.js"></script>
 </head>
 <body>
 
-    <div id="cursor-glow"></div>
-
     <h1>KRYPTON</h1>
-
     <input type="file" id="file-input" style="display: none;">
     <button id="browse-btn">Välj videofil</button>
     
@@ -55,6 +26,5 @@
     <script src="mp4-container-patcher.js"></script>
     <script src="popup.js"></script>
     <script src="interactions.js"></script>
-
 </body>
 </html>
