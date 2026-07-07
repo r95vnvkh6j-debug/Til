@@ -9,13 +9,12 @@
     #progress-container { width: 300px; height: 20px; background: #eee; margin: 10px auto; border-radius: 10px; overflow: hidden; }
     #progress-bar { width: 0%; height: 100%; background: #4caf50; transition: width 0.2s; }
   </style>
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js"></script>
+  <script src="/ffmpeg/ffmpeg.js"></script>
   <script src="mp4-container-patcher.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>KRYPTON</h1>
-    
     <input type="file" id="file-input" accept="video/mp4" hidden>
     <button id="browse-btn">Välj videofil</button>
     
@@ -29,7 +28,6 @@
       <button id="download-btn">Ladda ner</button>
     </div>
   </div>
-  
   <script src="popup.js"></script>
 </body>
 </html>
