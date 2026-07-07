@@ -4,17 +4,9 @@
       "source": "/(.*)",
       "headers": [
         { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
-        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
-      ]
-    },
-    {
-      "source": "/ffmpeg/(.*).wasm",
-      "headers": [
-        { "key": "Content-Type", "value": "application/wasm" },
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
         { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" }
       ]
     }
   ]
 }
+
