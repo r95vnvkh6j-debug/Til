@@ -1,6 +1,10 @@
-// Initiera FFmpeg
-const { FFmpeg } = FFmpegWASM;
-const ffmpeg = new FFmpeg();
+const { createFFmpeg, fetchFile } = FFmpeg;
+
+// Konfigurera för lokal hosting
+const ffmpeg = createFFmpeg({ 
+  corePath: '/ffmpeg/ffmpeg-core.js', 
+  log: true 
+});
 
 const fileInput = document.getElementById('file-input');
 const browseBtn = document.getElementById('browse-btn');
@@ -20,32 +24,23 @@ fileInput.addEventListener('change', async (e) => {
   statusText.innerText = "Laddar motor...";
 
   try {
-    if (!ffmpeg.loaded) {
-      // VIKTIGT: Vi anger specifika lokala sökvägar för alla delar
-      // Detta tvingar biblioteket att hålla sig inom din domän
-      await ffmpeg.load({
-        coreURL: "/ffmpeg/ffmpeg-core.js",
-        wasmURL: "/ffmpeg/ffmpeg-core.wasm",
-        workerURL: "/ffmpeg/ffmpeg.js" 
-      });
+    if (!ffmpeg.isLoaded()) {
+      await ffmpeg.load();
     }
 
     statusText.innerText = "Bearbetar...";
     
-    await ffmpeg.writeFile('input.mp4', await file.arrayBuffer());
+    // Skriv filen till virtuella filsystemet
+    ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
 
-    // Kör FFmpeg - kopierar strömmarna utan att koda om
-    await ffmpeg.exec([
-      '-i', 'input.mp4', 
-      '-c', 'copy', 
-      'output.mp4'
-    ]);
+    // Kör FFmpeg
+    await ffmpeg.run('-i', 'input.mp4', '-c', 'copy', 'output.mp4');
 
-    const data = await ffmpeg.readFile('output.mp4');
+    // Läs resultatet
+    const data = ffmpeg.FS('readFile', 'output.mp4');
     
-    // Applicera din patcher-funktion
+    // Patcha
     const patched = window.KryptonMp4Patcher.patchKryptonContainer(data);
-    
     const url = URL.createObjectURL(new Blob([patched], { type: 'video/mp4' }));
 
     processingState.classList.add('hidden');
@@ -60,8 +55,6 @@ fileInput.addEventListener('change', async (e) => {
 
   } catch (err) {
     console.error("FFmpeg Error:", err);
-    // Om det fortfarande kastar SecurityError, så betyder det att 
-    // webbläsaren blockerar worker-skriptet.
     statusText.innerText = "Error: " + err.message;
   }
 });
