@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   const browseBtn = document.getElementById("browse-btn");
   const fileInput = document.getElementById("file-input");
-  const processingState = document.getElementById("processing-state");
   const statusText = document.getElementById("status-text");
   const progressBar = document.getElementById("progress-bar");
+  const processingState = document.getElementById("processing-state");
   const successState = document.getElementById("success-state");
   const downloadBtn = document.getElementById("download-btn");
 
@@ -15,9 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   browseBtn.addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", (e) => e.target.files[0] && handleFile(e.target.files[0]));
 
-  async function handleFile(file) {
+  fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
     processingState.classList.remove("hidden");
     statusText.innerText = "Laddar motor...";
 
@@ -40,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ]);
 
       const remuxedBytes = await ffmpeg.readFile("output.mp4");
+      // Patcha containern med din funktion
       const outputBytes = window.KryptonMp4Patcher.patchKryptonContainer(remuxedBytes);
       
       const blob = new Blob([outputBytes], { type: "video/mp4" });
@@ -58,5 +61,5 @@ document.addEventListener("DOMContentLoaded", () => {
       statusText.innerText = "Fel: " + err.message;
       console.error(err);
     }
-  }
+  });
 });
