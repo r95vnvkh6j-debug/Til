@@ -19,7 +19,6 @@ fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  // Visa processing-läge, dölj success-läge
   processingState.classList.remove('hidden');
   successState.classList.add('hidden');
   statusText.innerText = "Laddar motor...";
@@ -27,8 +26,8 @@ fileInput.addEventListener('change', async (e) => {
   try {
     if (!ffmpeg.loaded) {
       await ffmpeg.load({
-        coreURL: '/ffmpeg/ffmpeg-core.js',
-        wasmURL: '/ffmpeg/ffmpeg-core.wasm',
+        coreURL: "/ffmpeg/ffmpeg-core.js",
+        wasmURL: "/ffmpeg/ffmpeg-core.wasm"
       });
     }
 
