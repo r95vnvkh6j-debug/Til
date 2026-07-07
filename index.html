@@ -1,21 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Krypton Uploader</title>
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+  <title>Krypton | Pro Uploader</title>
+  
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js"></script>
+  
+  <script src="mp4-container-patcher.js"></script>
+  
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
-    <h1>Krypton</h1>
+    <h1>KRYPTON</h1>
     <div id="drop-zone">
-      <button id="browse-btn">Browse Files</button>
       <input type="file" id="file-input" accept="video/mp4" hidden>
-      <p id="status-text">Ready</p>
+      <button id="browse-btn">Välj videofil</button>
+      
+      <div id="processing-state" class="hidden">
+        <p id="status-text">Redo</p>
+        <div id="progress-container">
+          <div id="progress-bar"></div>
+        </div>
+      </div>
+      
+      <div id="success-state" class="hidden">
+        <p>Klar!</p>
+        <button id="download-btn">Ladda ner</button>
+      </div>
     </div>
   </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
