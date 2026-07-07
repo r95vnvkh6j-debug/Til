@@ -1,8 +1,10 @@
 const { createFFmpeg, fetchFile } = FFmpeg;
 
-// Konfigurera för lokal hosting
+// Använd origin för att skapa en absolut sökväg till servern
+const baseUrl = window.location.origin;
+
 const ffmpeg = createFFmpeg({ 
-  corePath: '/ffmpeg/ffmpeg-core.js', 
+  corePath: `${baseUrl}/ffmpeg/ffmpeg-core.js`,
   log: true 
 });
 
@@ -30,16 +32,10 @@ fileInput.addEventListener('change', async (e) => {
 
     statusText.innerText = "Bearbetar...";
     
-    // Skriv filen till virtuella filsystemet
     ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
-
-    // Kör FFmpeg
     await ffmpeg.run('-i', 'input.mp4', '-c', 'copy', 'output.mp4');
 
-    // Läs resultatet
     const data = ffmpeg.FS('readFile', 'output.mp4');
-    
-    // Patcha
     const patched = window.KryptonMp4Patcher.patchKryptonContainer(data);
     const url = URL.createObjectURL(new Blob([patched], { type: 'video/mp4' }));
 
