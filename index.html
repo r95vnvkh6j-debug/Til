@@ -10,21 +10,21 @@
 <body>
   <div class="container">
     <h1>KRYPTON</h1>
-    <div id="drop-zone">
-      <input type="file" id="file-input" accept="video/mp4" hidden>
-      <button id="browse-btn">Välj videofil</button>
-      
-      <div id="processing-state" class="hidden">
-        <p id="status-text">Redo</p>
-        <div id="progress-container"><div id="progress-bar"></div></div>
-      </div>
-      
-      <div id="success-state" class="hidden">
-        <p>Klar!</p>
-        <button id="download-btn">Ladda ner</button>
-      </div>
+    
+    <input type="file" id="file-input" accept="video/mp4" hidden>
+    <button id="browse-btn">Välj videofil</button>
+    
+    <div id="processing-state" class="hidden">
+      <p id="status-text">Laddar...</p>
+      <div id="progress-container"><div id="progress-bar"></div></div>
+    </div>
+    
+    <div id="success-state" class="hidden">
+      <p>Klar!</p>
+      <button id="download-btn">Ladda ner</button>
     </div>
   </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>
