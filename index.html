@@ -2,32 +2,28 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Krypton | Video Processor</title>
+  <title>Krypton</title>
   <style>
     .hidden { display: none !important; }
     body { font-family: sans-serif; text-align: center; padding: 20px; }
-    #progress-container { width: 300px; height: 20px; background: #eee; margin: 10px auto; border-radius: 10px; overflow: hidden; }
-    #progress-bar { width: 0%; height: 100%; background: #4caf50; transition: width 0.2s; }
   </style>
   <script src="/ffmpeg/ffmpeg.js"></script>
-  <script src="mp4-container-patcher.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>KRYPTON</h1>
-    <input type="file" id="file-input" accept="video/mp4" hidden>
-    <button id="browse-btn">Välj videofil</button>
-    
-    <div id="processing-state" class="hidden">
-      <p id="status-text">Laddar...</p>
-      <div id="progress-container"><div id="progress-bar"></div></div>
-    </div>
-    
-    <div id="success-state" class="hidden">
-      <p>Klar!</p>
-      <button id="download-btn">Ladda ner</button>
-    </div>
+  <h1>KRYPTON</h1>
+  <input type="file" id="file-input" hidden>
+  <button id="browse-btn">Välj videofil</button>
+  
+  <div id="processing-state" class="hidden">
+    <p id="status-text">Laddar motor...</p>
   </div>
+  
+  <div id="success-state" class="hidden">
+    <p>Klar!</p>
+    <button id="download-btn">Ladda ner</button>
+  </div>
+
   <script src="popup.js"></script>
+  <script src="mp4-container-patcher.js"></script>
 </body>
 </html>
