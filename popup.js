@@ -19,6 +19,7 @@ fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
+  // Visa processing-läge, dölj success-läge
   processingState.classList.remove('hidden');
   successState.classList.add('hidden');
   statusText.innerText = "Laddar motor...";
