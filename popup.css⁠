@@ -1,68 +1,66 @@
-/* Grundläggande styling för att centrera allt */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  background-color: #f4f4f9;
-}
+const { createFFmpeg, fetchFile } = FFmpeg;
 
-.container {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 350px;
-}
+const baseUrl = window.location.origin;
 
-h1 {
-  color: #333;
-  margin-bottom: 1.5rem;
-}
+// Vi initierar med locateFile för att garantera att 
+// alla delar av FFmpeg hittar sina filer oavsett miljö.
+const ffmpeg = createFFmpeg({ 
+  corePath: `${baseUrl}/ffmpeg/ffmpeg-core.js`,
+  locateFile: (path, prefix) => {
+    if (path.endsWith('.worker.js')) return `${baseUrl}/ffmpeg/ffmpeg-core.worker.js`;
+    if (path.endsWith('.wasm')) return `${baseUrl}/ffmpeg/ffmpeg-core.wasm`;
+    return prefix + path;
+  },
+  log: true 
+});
 
-/* Denna klass gör att element försvinner helt */
-.hidden {
-  display: none !important;
-}
+document.addEventListener("DOMContentLoaded", () => {
+    const fileInput = document.getElementById('file-input');
+    const browseBtn = document.getElementById('browse-btn');
+    const statusText = document.getElementById('status-text');
 
-/* Styling för knappar */
-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.2s;
-}
+    if (browseBtn) {
+        browseBtn.addEventListener('click', () => fileInput.click());
+    }
 
-button:hover {
-  background-color: #0056b3;
-}
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-/* Styling för laddningsfältet */
-#progress-container {
-  width: 100%;
-  height: 15px;
-  background: #e0e0e0;
-  border-radius: 10px;
-  margin: 15px 0;
-  overflow: hidden;
-}
+        statusText.innerText = "Laddar motor...";
 
-#progress-bar {
-  width: 0%;
-  height: 100%;
-  background: #28a745;
-  transition: width 0.1s linear;
-}
+        try {
+            // Ladda motorn om den inte är redo
+            if (!ffmpeg.isLoaded()) {
+                await ffmpeg.load();
+            }
 
-#status-text {
-  font-size: 14px;
-  color: #666;
-  margin-top: 10px;
-}
+            statusText.innerText = "Bearbetar...";
+            
+            // Skriv till virtuellt filsystem
+            ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
+
+            // Kör FFmpeg
+            await ffmpeg.run('-i', 'input.mp4', '-c', 'copy', 'output.mp4');
+
+            // Läs reslutat
+            const data = ffmpeg.FS('readFile', 'output.mp4');
+            
+            // Patcha med din externa funktion
+            const patched = window.KryptonMp4Patcher.patchKryptonContainer(data);
+            
+            // Skapa nedladdning
+            const url = URL.createObjectURL(new Blob([patched], { type: 'video/mp4' }));
+            
+            statusText.innerText = "Klar!";
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'krypton_fixed.mp4';
+            a.click();
+
+        } catch (err) {
+            console.error("FFmpeg runtime error:", err);
+            statusText.innerText = "Error: " + err.message;
+        }
+    });
+});
