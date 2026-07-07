@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Krypton Uploader</title>
-  
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
@@ -17,7 +14,6 @@
   <div class="cursor-glow" id="cursor-glow"></div>
 
   <div class="container">
-
     <header class="reveal" style="--d:0">
       <p class="wordmark">Krypton</p>
       <h1>No More Compression<br>On TikTok</h1>
@@ -36,16 +32,13 @@
 
       <div id="processing-state" class="hidden">
         <div class="spinner"></div>
-        <h3 id="status-text">Initializing...</h3>
+        <h3 id="status-text">Processing on server...</h3>
         <div class="progress-bar-container">
           <div class="progress-bar" id="progress-bar"></div>
         </div>
       </div>
 
       <div id="success-state" class="hidden">
-        <div class="success-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path class="success-circle" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline class="success-check" points="22 4 12 14.01 9 11.01"/></svg>
-        </div>
         <h3>Processing complete</h3>
         <button class="btn-pill btn-primary tilt" id="download-btn" data-sfx="click"><span>Download Video</span></button>
       </div>
@@ -54,25 +47,11 @@
     <div class="divider reveal" style="--d:2"><span>Community</span></div>
 
     <div class="nav-buttons reveal" style="--d:3">
-      <a href="https://tiktok.com/@_kryptonaep" target="_blank" class="btn-pill btn-glass tilt" data-sfx="hover">
-        <span>TikTok</span>
-      </a>
-      <a href="https://discord.gg/9Wf9CVXWmr" target="_blank" class="btn-pill btn-glass tilt" data-sfx="hover">
-        <span>Discord</span>
-      </a>
+      <a href="https://tiktok.com/@_kryptonaep" target="_blank" class="btn-pill btn-glass tilt" data-sfx="hover"><span>TikTok</span></a>
+      <a href="https://discord.gg/9Wf9CVXWmr" target="_blank" class="btn-pill btn-glass tilt" data-sfx="hover"><span>Discord</span></a>
     </div>
-
-    <div class="glass-panel promo-panel reveal tilt" style="--d:4">
-      <div class="promo-content">
-        <h3>Start earning on TikTok</h3>
-        <p>Join the community and learn how to monetize your content.</p>
-      </div>
-      <a href="https://discord.gg/FHYzQmgZqE" target="_blank" class="btn-pill btn-secondary tilt" data-sfx="click">Join Now</a>
-    </div>
-
   </div>
 
-  <script src="mp4-container-patcher.js"></script>
   <script src="sfx.js"></script>
   <script src="interactions.js"></script>
   <script src="popup.js"></script>
