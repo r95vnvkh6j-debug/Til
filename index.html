@@ -2,58 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Krypton Uploader</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="ambient-blur"></div>
-  <div class="grain"></div>
-  <div class="cursor-glow" id="cursor-glow"></div>
-
   <div class="container">
-    <header class="reveal" style="--d:0">
-      <p class="wordmark">Krypton</p>
-      <h1>No More Compression<br>On TikTok</h1>
-    </header>
-
-    <div class="glass-panel upload-zone reveal tilt" id="drop-zone" style="--d:1">
-      <div id="upload-content">
-        <div class="upload-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        </div>
-        <h3>Drag & drop your video</h3>
-        <p>or</p>
-        <button class="btn-pill btn-primary tilt" id="browse-btn" data-sfx="click"><span>Browse Files</span></button>
-        <input type="file" id="file-input" accept="video/mp4,video/x-m4v,video/*" hidden>
-      </div>
-
-      <div id="processing-state" class="hidden">
-        <div class="spinner"></div>
-        <h3 id="status-text">Processing on server...</h3>
-        <div class="progress-bar-container">
-          <div class="progress-bar" id="progress-bar"></div>
-        </div>
-      </div>
-
-      <div id="success-state" class="hidden">
-        <h3>Processing complete</h3>
-        <button class="btn-pill btn-primary tilt" id="download-btn" data-sfx="click"><span>Download Video</span></button>
-      </div>
-    </div>
-
-    <div class="divider reveal" style="--d:2"><span>Community</span></div>
-
-    <div class="nav-buttons reveal" style="--d:3">
-      <a href="https://tiktok.com/@_kryptonaep" target="_blank" class="btn-pill btn-glass tilt" data-sfx="hover"><span>TikTok</span></a>
-      <a href="https://discord.gg/9Wf9CVXWmr" target="_blank" class="btn-pill btn-glass tilt" data-sfx="hover"><span>Discord</span></a>
+    <h1>Krypton</h1>
+    <div id="drop-zone">
+      <button id="browse-btn">Browse Files</button>
+      <input type="file" id="file-input" accept="video/mp4" hidden>
+      <p id="status-text">Ready</p>
     </div>
   </div>
-
-  <script src="sfx.js"></script>
-  <script src="interactions.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
